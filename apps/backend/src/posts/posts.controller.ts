@@ -1,5 +1,13 @@
-// src/posts/posts.controller.ts
-import { Controller, Get, Post as HttpPost, Body, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post as HttpPost,
+  Param,
+  Body,
+  UseGuards,
+  Req,
+} from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PostsService } from './posts.service';
 import { Post as PostEntity } from './post.entity';
 
@@ -12,24 +20,31 @@ export class PostsController {
     return this.postsService.getAllPosts();
   }
 
+  @UseGuards(JwtAuthGuard)
   @HttpPost()
-  create(@Body() body: { wallet_address: string; content: string }) {
-    return this.postsService.createPost(body.wallet_address, body.content);
+  create(@Req() req, @Body() body: { content: string }) {
+    const walletAddress = req.user.wallet_address;
+    return this.postsService.createPost(walletAddress, body.content);
   }
 
-  @HttpPost(':id/like')
-  like(@Param('id') id: string, @Body() body: { wallet_address: string }) {
-    return this.postsService.likePost(Number(id), body.wallet_address);
+  @UseGuards(JwtAuthGuard)
+  @HttpPost(':id/like') // No need of POST but the task's PDF asked for a POST request
+  like(@Req() req, @Param('id') id: string) {
+    const walletAddress = req.user.wallet_address;
+    return this.postsService.likePost(Number(id), walletAddress);
   }
 
+  @UseGuards(JwtAuthGuard)
   @HttpPost(':id/comment')
   comment(
+    @Req() req,
     @Param('id') id: string,
-    @Body() body: { wallet_address: string; content: string },
+    @Body() body: { content: string },
   ) {
+    const walletAddress = req.user.wallet_address;
     return this.postsService.commentOnPost(
       Number(id),
-      body.wallet_address,
+      walletAddress,
       body.content,
     );
   }
