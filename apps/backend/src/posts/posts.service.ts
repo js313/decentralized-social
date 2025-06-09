@@ -27,7 +27,8 @@ export class PostsService {
     const exists = await this.likeRepo.findOneBy({ post_id, wallet_address });
     if (!exists) {
       const like = this.likeRepo.create({ post_id, wallet_address });
-      return this.likeRepo.save(like);
+      await this.likeRepo.save(like);
+      return await this.getPostDetails(post_id);
     }
     return { message: 'Already liked' };
   }
@@ -42,7 +43,8 @@ export class PostsService {
       wallet_address,
       content,
     });
-    return this.commentRepo.save(comment);
+    await this.commentRepo.save(comment);
+    return comment;
   }
 
   async getPostDetails(post_id: number) {

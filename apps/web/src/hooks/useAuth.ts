@@ -1,13 +1,22 @@
 "use client";
 
 import { useAccount, useSignMessage } from "wagmi";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "@/lib/api";
 
 export const useAuth = () => {
   const { address, isConnected } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const [token, setToken] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+    const storedToken = localStorage.getItem("token");
+    if (storedToken) {
+      setToken(storedToken);
+    }
+  }, []);
 
   const login = async () => {
     if (!isConnected || !address) {
@@ -49,6 +58,6 @@ export const useAuth = () => {
     token,
     login,
     logout,
-    isSignedIn: !!localStorage.getItem("token"),
+    isSignedIn: !!token && isClient,
   };
 };
