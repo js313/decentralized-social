@@ -5,7 +5,7 @@ const dbConfig: DataSourceOptions = {
   host: 'localhost',
   port: 5432,
   username: 'postgres',
-  password: 'password', // update this if needed
+  password: 'password',
   database: 'social',
 };
 

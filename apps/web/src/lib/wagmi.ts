@@ -4,7 +4,7 @@ import { sepolia } from "wagmi/chains";
 
 export const config = getDefaultConfig({
   appName: "Decentralized Social Media",
-  projectId: "d6e8552d2b86184a72064ea1f367606d",
+  projectId: process.env.NEXT_PUBLIC_PROJECT_ID || "",
   chains: [sepolia], // TODO: change to mainnet for production
   transports: {
     [sepolia.id]: http(),
